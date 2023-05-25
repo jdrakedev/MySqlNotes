@@ -1,0 +1,2845 @@
+MySQL Udemy Bootcamp Notes
+10 October, 2021
+
+--Web app built with NodeJS and JavaScript at the end
+
+--what is a database?
+--1.a collection of data.
+--2.a method for accessing and manipulating data
+--3.a structured set of computerized data with an accessible interface
+
+--what is a Database Managment System? (DBMS)
+--1. App -> DBMS -> Database
+
+--Difference between SQL and MySQL?
+--SQL: structured query language - how we talk to and manipulate data
+--might be slight differences in syntax but MySQL is a DBMS that uses
+--the language SQL
+
+--To start the cli (command line interface) in GoormIDE
+mysql-ctl cli;
+
+--Creating a database
+create database twatter;
+
+--Show all available databases
+show databases;
+
+--Switch to database 
+use twatter;
+
+--Show current databse in use
+select database();
+
+--Delete database
+drop twatter;
+
+--Creating a table
+create table tablename
+	(
+	column_name data_type,
+	column_name data_type,
+	);
+
+EX: 
+create table twats(
+username varchar(16),
+content varchar(140),
+favorites int, 
+retwats int);
+
+--Show Tables(in current database)
+show tables;
+
+show columns from twats;
+or 
+desc twats;
+
+--Deleting Tables
+drop table twats;
+
+--Adding data to the tables
+insert into twats (username,content,favorites,retwats)
+values ('dethbringer','crotchduster is trash',1,1);
+
+--Show data in tables
+select * from twats;
+
+--Adding bulk data to tables
+insert into twats (username,content,favorites,retwats)
+values ('l','if youre reading this kira has already won',4200,1690),
+	   ('flameprincess','if you cant handle my heat get out the kitchen',56000,2400),
+	   ('aniskywalker','wanted to watch dune but i hate sand too much',690,66),
+	   ('batman','tiktok is madness my bet says the joker is behind it',12600,1420);
+
+--Warnings
+--failing to adhear to the correct data type or the value restriction (ex varchar(10))
+--will result in a warning which will still run the code but will have unexpected results.
+--to show warnings use:
+show warnings;
+
+--NULL and NOT NULL 
+--Null: the value is unknown(does not mean zero!)
+--To prevent info from being left "null" the NOT NULL 
+--function is used, like so..
+create table cats(
+name varchar(10) not null,
+age int not null
+);
+--NOT NULL must be specified when the table is being created
+insert into cats(name,age)
+values
+('salem',1000),
+('kaho',28),
+('meowth'); -- <-this would cause an error since age is blank 
+
+--Default values
+--if an area of data is not filled out the default value
+--will be displayed instead
+create table dogs(
+name varchar(16) default 'stray',
+breed varchar(25) not null,
+color varchar(25) not null,
+age int default '00'
+);
+
+insert into dogs(breed,color)
+values
+('doberman','black');
+--omitting the name and age field will automatically fill out the 
+--default fields that were specified when creating the table, but
+--having a value of 0 as the default for 'age' seems a bit wrong.
+
+--if the age is not known(assuming this table was created for an animal shelter)
+--a NULL value can be entered
+insert into dogs(breed,color,age)
+values ('pug','tan',NULL);
+
+--it is possible to add a default value as well as setting it to 
+--NOT NULL
+create table bums(
+name varchar(25) not null default 'rogue_bum',
+color varchar(12) not null default 'sundamaged',
+age int not null default '0'
+);
+
+########################################################################################################################################
+SECTION 4
+
+--Primary Keys
+--gives data a unique identifier that sets it apart from
+--data that shares the same name or properties
+create table the_boyz(
+boyz_id int not null,
+name varchar(25),
+age int,
+primary key (boyz_id)
+);
+
+insert into the_boyz(boyz_id,name,age)
+values
+(1,'bobby_hill',12),
+(2,'leonidus',60),
+(3,'detective_terry',42);
+
+--to prevent losing track of the correct primary key
+--when entering data, the AUTO_INCREMENT function is used
+create table the_girlz(
+girlz_id int not null auto_increment,
+name varchar(25),
+age int,
+primary key (girlz_id)
+);
+
+insert into the_girlz(name,age)
+values
+('coraline_jones',11),
+('joi',0),
+('jen_yu',18);
+
+--Creating an employee table exercise
+create table employees(
+emp_id int not null auto_increment,
+last_name varchar(25) not null,
+first_name varchar(25) not null,
+middle_name varchar(25),
+age int not null,
+current_status varchar(25) not null default 'employed', 
+primary key (emp_id)
+);
+
+insert into employees(last_name,first_name,age,current_status)
+values
+('bateman','patrick',27,'employed');
+
+--CRUD(create,read,update,delete)
+--insert into = create
+
+--for next section the original cats table is dropped 
+--and replaced with a new complex version
+drop table cats; --to delete table
+
+show tables; --to verify that table is gone
+
+--new cats table
+create table cats(
+cat_id int not null auto_increment,
+name varchar(100),
+breed varchar(100),
+age int,
+primary key(cat_id)
+);
+
+########################################################################################################################################
+SECTION 5
+
+INSERT INTO cats(name, breed, age) 
+VALUES ('Ringo', 'Tabby', 4),
+       ('Cindy', 'Maine Coon', 10),
+       ('Dumbledore', 'Maine Coon', 11),
+       ('Egg', 'Persian', 4),
+       ('Misty', 'Tabby', 13),
+       ('George Michael', 'Ragdoll', 9),
+       ('Jackson', 'Sphynx', 7);
+
+--Read 
+--in command SELECT * FROM cats, the star(*) means all
+
+--to select specific data from tables, a command 
+--such as
+select name from cats; --can be used
+
+--to select more than one column in a table a comma must 
+--be used like so..
+select name, age from cats;
+
+--WHERE clause
+--the WHERE clause allows you to pinpoint
+--specific data from a column
+
+--Aliases
+--helps read the data in some cases, useful for random reasons
+--Ex:
+select cat_id as id, name from cats;
+
+
+--UPDATE
+--this will change the breed from 'tabby' to 'shorthair'
+update cats set breed = 'Shorthair'
+where breed = 'Tabby';
+
+--change the age of misty from 13 to 14
+update cats set age = 14
+where name = 'misty';
+
+--change jackson's name to jack
+update cats set name = 'Jack'
+where name = 'Jackson';
+
+--update two items simultaneously
+--change the color to off white and the size to xtra small
+update shirts set color = 'off white', shirt_size = 'XS'
+where color = 'white';
+
+
+--DELETE
+--delete any cat with the name egg.
+delete from cats where name = 'egg';
+
+--NOTE: when Egg is deleted from the database the primary key (cat_id)
+--for all the other cats are not altered.
+
+--delete cats whose name is the same as primary key
+delete from cats where age = cat_id;
+
+--this will delete all the cats in the cats table. very sad ); 
+delete from cats;
+
+--Note: the table will only be entirely deleted if drop is used.
+
+########################################################################################################################################
+SECTION 6
+
+#CRUD EXERCISES
+
+--create a database called shirts_db
+create database shirts_db;
+
+--create a table named shirts
+create table shirts(
+shirt_id int not null auto_increment,
+article varchar(16),
+color varchar(16),
+shirt_size varchar(16),
+last_worn int,
+primary key(shirt_id)
+);
+
+insert into shirts (article,color,shirt_size, last_worn)
+values
+('t-shirt', 'white', 'S', 10),
+('t-shirt', 'green', 'S', 200),
+('polo shirt', 'black', 'M', 10),
+('tank top', 'blue', 'S', 50),
+('t-shirt', 'pink', 'S', 0),
+('polo shirt', 'red', 'M', 5),
+('tank top', 'white', 'S', 200),
+('tank top', 'blue', 'M', 15);
+
+--delete all the old shirts
+delete from shirts where last_worn = '200';
+
+--delete all the tank tops
+delete from shirts where article = 'tank top';
+
+--delete all data from shirts table
+delete from shirts;
+
+--delete the entire table of shirts
+drop table shirts;
+
+########################################################################################################################################
+SECTION 7
+
+NOTE: use # to comment out a line in GoormIDE(within a file) 
+/* */ for a block comment
+
+To import a file into the GoormIDE hierarchy, simply drag and drop a file into the desired folder
+
+--Run a file in GoormIDE:
+in the command line:
+	source filename.sql ENTER
+
+STRING FUNCTIONS
+
+--Concatenation functions
+CONCAT(x,y,z)
+
+concat(column, anotherColumn)
+
+concat(column, 'text', anotherColumn, 'more text')
+
+EX:
+concat(author_fname, ' ', author_lname)
+
+select concat('hello', 'world', '!')
+output: helloworld!
+
+select 
+concat(author_fname, ' ', author_lname) Authors
+from books;
+
+CONCAT_WS() --concat with separator
+
+select 
+concat_ws(' - ', title, author_fname, author_lname) AuthorInfo
+from books;
+
+SUBSTRING('string', [index start(int)], [index end(int)]);
+--can also use SUBSTR()
+
+NOTE:index starts at 1 in SQL!!!
+
+--print out the indecies in the string 'Hello world' from 1 to 4
+select substring('Hello world', 1, 4);
+output: Hell
+
+--print out everything at and after index # 5 
+select substring('Hello world', 5);
+output: o world
+
+--print out the last character in a string
+select substring('Hello world', -1) GiveHerThe;
+output: d (giggidy!)
+
+--only print the first 10 characters from the book titles
+select substring(title, 1, 10) BookTitleABV  from books;
+
+--combine CONCAT and SUBSTR
+select concat(substring(title, 1, 10), '...') BookTitleABV from books;
+
+REPLACE('string', 'what you want to remove', 'what you want to replace it with')
+
+EX:
+select replace('Hello world', 'Hell', '#$&%');
+output: #$&%o world
+
+--replace all the l's with 7's
+select replace('Hello world', 'l', '7');
+output: He77o wor7d
+
+--replace is case sensitive
+EX:
+select replace('Hello wOrld', 'O', '*');
+output: Hello w*rld
+
+--can also replace whitespace itself
+EX:
+select replace('cheese bread coffee almondmilk', ' ', ' and ') TheList;
+
+--to use with data from table
+--replace all the e's with 3's
+select replace(title, 'e', '3') E3 from books;
+
+REVERSE('string to be reversed')
+EX:
+select reverse('Hello world');
+output: dlrow olleH
+
+CHAR_LENGTH()
+--returns the number of characters in a given string
+
+select char_length('Hello World');
+
+select author_lname, char_length(author_lname) Length from books;
+
+select title from replace(title, ' ', '->') from books;
+
+
+UPPER()
+EX:
+select upper('hello world');
+output: HELLO WORLD
+
+SELECT CONCAT('MY FAVORITE BOOK IS ', UPPER(title)) FROM books;
+
+LOWER()
+EX: 
+select lower('Hello World');
+output: hello world
+
+SELECT CONCAT('MY FAVORITE BOOK IS ', LOWER(title)) FROM books;
+
+--exercises!
+select upper(reverse("why is water so wet?")); --reverse and uppercase
+
+--replaces spaces in title with '->'
+
+select title from replace(title, ' ', '->')
+from books;
+
+########################################################################################################################################
+SECTION 8
+
+Refining Selections
+
+--inserting new books into our books table
+
+INSERT INTO books
+    (title, author_fname, author_lname, released_year, stock_quantity, pages)
+    VALUES ('10% Happier', 'Dan', 'Harris', 2014, 29, 256), 
+           ('fake_book', 'Freida', 'Harris', 2001, 287, 428),
+           ('Lincoln In The Bardo', 'George', 'Saunders', 2017, 1000, 367);
+--
+
+DISTINCT
+--used in conjunction with SELECT
+
+EX:
+select author_lname from books;
+--will return the authors last name for each book they have in the DB
+
+select distinct author_lname from books;
+--will return the authors last name only once(regardless of how many books they have in the DB)
+
+EX:
+select released_year from books;
+--returns every released_year for each book(even if there are duplicates)
+
+select distinct released_year from books;
+--returns every released_year(excluding duplicates) 
+
+--two ways to get distinct full names from authors
+SELECT DISTINCT CONCAT(author_fname,' ', author_lname) FROM books;
+ 
+SELECT DISTINCT author_fname, author_lname FROM books;
+
+ORDER BY
+--for sorting results
+
+--use this to find..
+	-best/worst selling item
+	-find most/least active user on a site
+	-find most commented post etc..
+
+--order by title alphabetically (a-z)
+select title from books order by title asc;
+
+--order by title alphabetically (z-a)
+select title from books order by title desc;
+
+--organize the data by the year the books were released
+select title,released_year from books order by released_year;
+
+--shortcut
+select title, author_fname, author_lname
+from books
+order by 2 --(the 2 is the index value for author_fname, 1 would be title, and 3 author_lname) 
+
+
+LIMIT
+--limit the ammount of results
+
+--give me the top 2 selling books(because they are stocked the least)
+select title,stock_quantity from books order by stock_quantity limit 2;
+
+--this can be used in a website to limit the results that are shown on a give pages
+EX:
+select title,  released_year form books 
+order by released_year desc limit 0,10--the first ten results (start at 0 give me 10 results)
+
+select title,  released_year form books 
+order by released_year desc limit 10,10--the first ten results (start at 10 give me 10 results)
+
+--to select from row 1 to the last row
+select * from tbl limit 26, 1,000,000,000,000; (starting point,big number)
+
+--give all the books after the first 5 that were added to the DB
+select title from books limit 5, 100,000; (starting point, big number)
+
+
+LIKE
+--allows more precise searches
+
+EX:
+--someone comes into the book shop looking for a book but cant remembe the title,
+--they only know the authors first name (or even just the first few letters)
+
+select * from books where author_fname like '%da%';
+
+output: all the authors that have 'da' somewhere in the their first name
+
+--to select all the authors that have a first name that starts with 'da'(leave off the first wildcard)
+select * from books where author_fname like 'da%';
+
+--the underscore is a way of specifying one character..
+
+--if you are looking for a stock quantity of a number that is 4 chars long
+select stock_quantity from books where stock_quantity like '____'; (4 underscores)
+
+
+--if you are looking for a stock quantity of a number that is 2 chars long
+select stock_quantity from books where stock_quantity like '__'; (2 underscores)
+
+--if you are searching for a phone number
+(505)555-5555 match the pattern using LIKE '(___)___-____'
+
+--if you happen to be searching for a title with a % sign in it
+where title like '%\%%'(\%) backslash-percent
+EX:
+select title from books where title like '%\%%';
+output: 10% Happier
+
+same for an underscore '%_%%' (underscore-percent)
+
+EXERCISES
+--books that contain 'stories' in the title
+select title from books where title like '%stories%';
+
+--find the longest book (pages)
+select title,pages from books order by pages desc limit 1;
+
+--print a summary containing the title and year for the most recent books
+select concat(title,' - ',released_year) as summary from books order by released_year desc limit 3; 
+
+--find all the books with an author_lname that contains a space(' ') -- a double last name
+select title, author_lname from books where author_lname like '% %';
+
+--find the 3 books with the lowest stock
+select title, released_year, stock_quantity from books order by stock_quantity limit 3;
+
+--print title and author_lname, sorted first by author_lname and the by title
+select title, author_lname from books order by author_lname, title;
+
+--do the thing!
+select upper(concat('my favorite author is',' ', author_fname,' ',author_lname)) as yell 
+from books order by author_lname;
+
+########################################################################################################################################
+SECTION 9
+
+The magic of aggregate functions
+
+aggregate functions: 
+built in SQL functions, that allow user to aggregate(combine) data
+to get meaning out of it
+
+COUNT
+--counts whatever you want it to count
+
+EX:
+--how amny books are in our database?
+select count(*) from books;
+
+--how many author first names are there?
+select count(distinct author_fname) from books;
+
+--how to get distinct authors (when some last names are duplicates)
+select count(distinct author_fname, author_lname) from books;
+
+--how many titles contain 'the'
+select count(*) from books where title like '%the%';
+
+
+GROUP BY
+--summarizes or aggregates identical data into single rows
+
+EX:
+--count how many books each author has written
+select author_lname LastName, count(*) BooksWritten
+from books
+group by author_lname; 
+
+--get the ammount of books that were released each year
+select released_year, count(*) 
+from books
+group by released_year;
+
+select concat('In ',released_year,' ',count(*),' book(s) released') as 'Books by the year' 
+from books
+group by released_year;
+
+
+MIN and MAX
+--get s minimum and maximum values
+
+EX:
+--what was the year that a book was first released?
+select min(released_year) from books;
+
+--select the book with the most ammount of pages
+select max(pages) from books;
+
+--how to get the title of the book with the most pages
+--using a subquery
+select title,pages from books
+where pages = 
+--the result of finding max pages
+(select max(pages) from books);
+
+--how to get the title of the book with the most pages
+--using order by
+select title,pages from books order by pages desc limit 1;
+
+--find the first book release for each author
+select author_fname, author_lname, min(released_year)
+from books
+group by author_fname, author_lname;
+
+
+--find the longest page count for each author
+select author_fname, author_lname, max(pages)
+from books
+group by author_fname, author_lname;
+
+
+SUM
+--sums together data
+
+--can sum all profits in sales that were made (and stuff like that)
+
+--sum all the pages in the entire database
+select sum(pages) from books;
+
+--sum all pages each author has written
+select author_fname, author_lname, sum(pages) 
+from books group by author_fname, author_lname;
+
+AVG
+--averages data(sums them then divides based off of how many things are added together)
+
+--calculate the average released_year across all books
+select avg(released_year) from books;
+
+--calculate the average stock quantity for books released in the same year
+select released_year, avg(stock_quantity) 
+from books 
+group by released_year;
+ 
+--calculate the average ammount of pages written by each author
+select author_fname, author_lname, avg(pages)
+from books
+group by author_fname, author_lname;
+
+
+EXERCISES
+--print the number of books in the database
+select count(book_id) from books;
+
+--print how many books were released each year
+select released_year, count(title) 
+from books
+group by released_year;
+
+--print the total number of books in stock
+select sum(stock_quantity) 
+from books;
+
+--find the average released_year for each author
+select author_fname, author_lname, avg(released_year)
+from books
+group by author_fname, author_lname;
+
+--find the full name of the author who wrote the longest book
+select concat(author_fname, ' ', author_lname) WroteMostPagesPerson, pages PagesWritten
+from books
+where pages = 634;
+
+--using subquery
+select concat(author_fname, ' ', author_lname) WroteMostPagesPerson, pages PagesWritten
+from books
+where pages = (select max(pages) from books);
+
+--using order by 
+select concat(author_fname, ' ', author_lname) WroteMostPagesPerson, pages PagesWritten
+from books
+order by pages desc
+limit 1;
+
+--print year released alias/year, num of books alias/#books, average pages alias/pages
+select released_year as year, count(title) as '#books', avg(pages) as 'avg pages'
+from books
+group by released_year;
+
+NOTE: when using an alias that contains special characters, quotes are required!!!
+
+########################################################################################################################################
+SECTION 10
+
+More Data Types
+
+Varchar = String
+Char = String w/fixed length 
+-anything above the length will be truncated(chopped off), anything less will have spaces added
+-commonly used for fixed length text such as:
+	state abbreviations: NM,CO
+	yes/no flags: Y/N
+	Sex: Yes!lol (M/F)
+
+Decimal(12,2) 
+Fixed-point type, exact calculations
+When creating a collumn there are two arguments (total number of digits, digits after decimal)
+EX:
+Decimal(5,2)
+5 digits
+|      |
+ 999.99
+	|  |
+2 digits
+
+Float
+Floating-point type, approximate calculations
+
+Double
+Floating-point type, approximate calculations
+
+Float and Double will store larger numbers using less space
+however, it comes at the cost of precision()
+
++---------+-------------+----------------+
+|data type|memory needed|precision issues|
++---------+-------------+----------------+
+|FLOAT    |4 bytes      |~7 digits       |
++---------+-------------+----------------+
+|DOUBLE   |8 bytes      |~15 digits      |
++---------+-------------+----------------+
+Based on the table above we can conclude that double is indeed more precise
+
+Which numeric data type should be used when storing info w/decimals?
+Decimal should be used most frequently (unless precision doesn't matter)
+
+For Banking/Financial/Prices data use Decimal(because precision matters here!)
+
+
+DATE/TIME
+
+Date: 
+Values with a date but no time 'YYYY-MM-DD' format
+
+Time:
+Values with a time but no date 'HH:MM:SS' format
+
+Datetime:
+Values with a date and time 'YYYY-MM-DD HH:MM:SS' format
+
+Example table calendar:
+create database calendar;
+
+use calendar;
+
+create table people (
+name varchar(100),
+birthdate date,
+birthtime time,
+birth_dt datetime
+);
+
+insert into people 
+(name, birthdate, birthtime, birth_dt)
+values
+('Padma', '1983-11-11', '10:07:35', '1983-11-11 10:07:35');
+
+insert into people 
+(name, birthdate, birthtime, birth_dt)
+values
+('Larry', '1943-12-25', '04:10:42', '1943-12-25 04:10:42');
+
+Datetime Functions:
+CURDATE() - gives current date
+CURTIME() - gives current time
+NOW() - gives current datetime
+
+can use the functions to give the time someone created an account, commented on a post
+or something to tga
+
+insert into people 
+(name, birthdate, birthtime, birth_dt)
+values
+('Toaster', curdate(), curtime(), now());
+
+--take microwave out!!
+delete from people where name = 'microwave';
+
+
+Formatting Dates:
+select name, birthdate from people;
+--normal output
+
+select name, day(birthdate) from people;
+--will only give back the day of birthdate
+
+select name, dayname(birthdate) from people;
+--will give back the day name of birthdate
+
+select name, month(birthdate) from people;
+--will give back the month of birthdate
+
+select name, monthname(birthdate) from people;
+--will give back the month name of birthdate
+
+DATE_FORMAT
+--very useful for formatting dates
+
+EX:
+select date_format('1943-12-25 04:10:42', '%W %M %Y') formatted_date;
+--output
++------------------------+
+| formatted_date         |
++------------------------+
+| Saturday December 1943 |
++------------------------+
+
+select date_format(birth_dt, '%W %M %Y') formatted_date from people;
+--output
++------------------------+
+| formatted_date         |
++------------------------+
+| Friday November 1983   |
+| Saturday December 1943 |
+| Tuesday May 2022       |
++------------------------+
+
+select date_format(birth_dt, '%W') formatted_week from people;
+--output
++----------------+
+| formatted_week |
++----------------+
+| Friday         |
+| Saturday       |
+| Tuesday        |
++----------------+
+
+select name, date_format(birth_dt, 'Was born on a %W') dayborn from people;
+--output
++---------+------------------------+
+| name    | dayborn                |
++---------+------------------------+
+| Padma   | Was born on a Friday   |
+| Larry   | Was born on a Saturday |
+| Toaster | Was born on a Tuesday  |
++---------+------------------------+
+
+--to print a standard date format 01/11/11
+select date_format(birth_dt, '%m/%d/%Y') standard_date from people;
+--output
++---------------+
+| standard_date |
++---------------+
+| 11/11/1983    |
+| 12/25/1943    |
+| 05/24/2022    |
++---------------+
+
+
+DATE/MATH
+
+DATEDIFF
+--can use to calculate the difference in days from one date to anotherColumn
+
+EX:
+--to get the ammount of days since the people in our people table were born
+--we use the function now() as the first parameter and the peoples birthdates as the second
+select name, datediff(now(), birthdate) dayssincebirthed from people;
+--output
++---------+------------------+
+| name    | dayssincebirthed |
++---------+------------------+
+| Padma   |            14081 |
+| Larry   |            28647 |
+| Toaster |                7 |
++---------+------------------+
+
+DATE_ADD
+--used to add time to an existing date
+
+EX:
+select birth_dt, date_add(birth_dt, INTERVAL 10 second) from people;
+
+
+TIMESTAMPS
+--stores date and time info (similar to date time)
+--however, timestamp has a range from 1970 - 2038
+
+EX:
+--use timestamp to store data for when the comment was created
+create table comments(
+content varchar(100),
+created_at timestamp default now()
+);
+
+OR:
+created_at datetime default now() [datetime takes up more mem but has longer range]
+
+insert into comments (content) values ('lol what a trip!');
+insert into comments (content) values ('and i took it personally!');
+insert into comments (content) values ('dont feed the trolls!');
+
+--to get the most recent comments
+select * from comments order by created_at desc;
+
+--to store the data for anytime a field is changed
+create table comments2(
+content varchar(100),
+changed_at TIMESTAMP DEFAULT NOW() ON UPDATE NOW()
+);
+
+--change the time when field was last updated
+UPDATE comments2 SET content = 'i could not resist!' 
+WHERE content = 'dont feed the trolls!';
+
+EXERCISES
+--why use char vs varchar? 
+since char has a fixed length, it could be used for
+things such as a state abbreviations, Y/N flags, or M/F selection
+
+--fill in the blanks
+create table inventory(
+item_name ----,
+price ----,
+quantity ----
+);
+
+create table inventory(
+item_name varchar(100),
+price decimal(8,2),
+quantity int
+);
+
+--what is difference between datetime and timestamp?
+datetime has a much longer range of time, 
+timestamp only ranges from 1970 to 2038
+
+--print the current time in GoormIDE
+select curtime();
+
+--print the current date in GoormIDE
+select curdate();
+
+--print the current day of the week(number) in GoormIDE
+select dayofweek(now());
+
+--print the current day of the week(day name) in GoormIDE
+select dayname(now());
+
+--print the current day/time using format mm/dd/yyyy in GoormIDE
+select date_format(curdate(), '%m/%d/%Y');
+
+--print the current day/time using format Month(name) Day(number st/nd) at time in GoormIDE
+EX: January 6th at 3:33
+select date_format(now(), '%M %D at %h:%i');
+
+--create a tweets table that stores:
+-the content of a tweet
+-a username
+-time it was created
+
+create table tweetz(
+content varchar(320),
+username varchar(20),
+tweeted_at timestamp default now()
+);
+
+insert into tweetz (content, username) 
+values ('i cant wait for the next pandemic need another stimy!','unemployed69');
+
+########################################################################################################################################
+SECTION 11
+
+Logical Operators
+
+LIKE and NOT LIKE
+
+--select all the book titles that start with 'W'
+select title from books where title LIKE 'W%';
+
+--select all the book titles that dont start with 'W'
+select title from books where title NOT LIKE 'W%';
+
+GREATER THAN
+--select all the books released after the year 2000
+select title from books where released_year > 2000;
+
+LESS THAN 
+--select all the books released before the year 2000
+select title from books where released_year < 2000;
+
+GREATER THAN OR EQUAL TO
+--select the books with a stock quantity of 100 or more
+select title, stock_quantity from books where stock_quantity >= 100;
+
+LESS THAN OR EQUAL TO
+--select the books with a stock quantity of 100 or less
+select title, stock_quantity from books where stock_quantity <= 100;
+
+LOGICAL AND (&&)
+--both statements must be true when using AND
+
+--select a title from Dave Eggers that was released after the year 2000
+select title from books where author_lname like 'eggers' and released_year > 2010;
++----------------------------------+
+| title                            |
++----------------------------------+
+| A Hologram for the King: A Novel |
+| The Circle                       |
++----------------------------------+
+
+--using AND(&&) is not limited to using 2 components
+EX:
+select * from books 
+where author_lname = 'eggers' AND
+released_year > 2010 AND  
+title like '%novel%';
+
+LOGICAL OR(||)
+--only one statement must be true when using OR
+
+select title from books where author_lname like 'eggers' OR released_year > 2010;
++-------------------------------------------+
+| title                                     | using same example from above,
++-------------------------------------------+ and only changing AND to OR will generally 
+| Norse Mythology                           | give us more results because more criteria 
+| A Hologram for the King: A Novel          | is being met.
+| The Circle                                |
+| A Heartbreaking Work of Staggering Genius |
+| 10% Happier                               |
+| Lincoln In The Bardo                      |
++-------------------------------------------+
+
+EX:
+select 40 <= 100 OR -2 > 0;
++---------------------+
+| 40 <= 100 OR -2 > 0 |
++---------------------+
+|                   1 | True because one of these statements is true
++---------------------+
+
+select 10 > 5 OR 5 = 5; True because both are true
+
+select 'a' = 5 OR 3000 < 2000;
++------------------------+
+| 'a' = 5 OR 3000 < 2000 |
++------------------------+
+|                      0 | False because neither are true
++------------------------+
+
+
+BETWEEN
+EX:
+--select all books with a page count between 100 and 500
+(without BETWEEN)
+select title, pages from books where pages >= 100 && pages <= 500;
+
+(with BETWEEN)
+select title, pages from books where pages BETWEEN 100 AND 500;
+
+NOTE:
+When use the BETWEEN operator, you must use AND instead of &&
+
+NOT BETWEEN
+--select all books with a page count thats not between 100 and 500
+select title, pages from books where pages NOT BETWEEN 100 AND 500;
+
+NOTE:
+For best results when using between with date or time values, use cast() to explicitly 
+covert the values to the desired data type
+
+EX:
+--find birth date and time for people with birthdays between 1980 and 2000
+(without casting)
+select name, birth_dt from people
+where birth_dt between '1980-01-01' and '2000-01-01';
+
++-------+---------------------+
+| name  | birth_dt            |
++-------+---------------------+
+| Padma | 1983-11-11 10:07:35 |
++-------+---------------------+
+
+(with casting)
+select name, birth_dt from people
+where birth_dt BETWEEN CAST('1980-01-01' AS DATETIME)
+AND CAST('2000-01-01' AS DATETIME);
+
+--these will have the same result but casting lowers the chance of errors
+
+
+IN
+--allows us to provide a set of values and check if a collumn is in that range of values
+
+--select all the  books written by Carver or Lahiri or Smith
+(without IN)
+select title, author_lname from books
+where author_lname = 'Carver' or 
+author_lname = 'Lahiri' or
+author_lname = 'Smith';
+
+(with IN)
+select title, author_lname from books
+where author_lname IN('Carver', 'Lahiri', 'Smith');
++-----------------------------------------------------+--------------+
+| title                                               | author_lname |
++-----------------------------------------------------+--------------+
+| The Namesake                                        | Lahiri       |
+| Interpreter of Maladies                             | Lahiri       |
+| Just Kids                                           | Smith        |
+| What We Talk About When We Talk About Love: Stories | Carver       |
+| Where I'm calling from: Selected Stories            | Carver       |
++-----------------------------------------------------+--------------+
+
+NOT IN
+--the opposite of IN
+
+--select books that were not published in an even year
+select title, released_year from books 
+where released_year >= 2000
+and released_year NOT IN(2000, 2002, 2004, 2006, 2010, 2012, 2016);
+
+MODULO
+--the same but using the % (modulo operator)
+select title, released_year from books
+where released_year >= 2000 
+and released_year % 2 != 0;
++-------------------------------------------+---------------+
+| title                                     | released_year |
++-------------------------------------------+---------------+
+| The Namesake                              |          2003 |
+| American Gods                             |          2001 |
+| The Circle                                |          2013 |
+| A Heartbreaking Work of Staggering Genius |          2001 |
+| Coraline                                  |          2003 |
+| Consider the Lobster                      |          2005 |
+| 10% Happier                               |          2014 |
+| fake_book                                 |          2001 |
+| Lincoln In The Bardo                      |          2017 |
++-------------------------------------------+---------------+
+
+
+CASE STATEMENTS
+--logical statements that execute code if a condition is met
+
+NOTE: CASE statements are part of the SELECT Clause!!! Therefore anything precedes it must have a comma after!!!
+
+--operators used in a case statement
+CASE, WHEN, THEN, END (also AS, to give the query proper formatting)
+
+--if released_year is greater than 2000, the era is Modern Lit
+else the era is 20th Century Lit.
+--Return this info using a SQL query
+select title, released_year,
+	CASE
+		WHEN released_year >= 2000 THEN 'Modern Lit'
+		ELSE '20th Century Lit'
+	END
+AS Era
+from books;
++-----------------------------------------------------+---------------+------------------+
+| title                                               | released_year | Era              |
++-----------------------------------------------------+---------------+------------------+
+| The Namesake                                        |          2003 | Modern Lit       |
+| Norse Mythology                                     |          2016 | Modern Lit       |
+| American Gods                                       |          2001 | Modern Lit       |
+| Interpreter of Maladies                             |          1996 | 20th Century Lit |
+| A Hologram for the King: A Novel                    |          2012 | Modern Lit       |
+| The Circle                                          |          2013 | Modern Lit       |
+| The Amazing Adventures of Kavalier & Clay           |          2000 | Modern Lit       |
+| Just Kids                                           |          2010 | Modern Lit       |
+| A Heartbreaking Work of Staggering Genius           |          2001 | Modern Lit       |
+| Coraline                                            |          2003 | Modern Lit       |
+| What We Talk About When We Talk About Love: Stories |          1981 | 20th Century Lit |
+| Where I'm Calling From: Selected Stories            |          1989 | 20th Century Lit |
+| White Noise                                         |          1985 | 20th Century Lit |
+| Cannery Row                                         |          1945 | 20th Century Lit |
+| Oblivion: Stories                                   |          2004 | Modern Lit       |
+| Consider the Lobster                                |          2005 | Modern Lit       |
+| 10% Happier                                         |          2014 | Modern Lit       |
+| fake_book                                           |          2001 | Modern Lit       |
+| Lincoln In The Bardo                                |          2017 | Modern Lit       |
++-----------------------------------------------------+---------------+------------------+
+
+--use title and stock_quantity to print out a graphical representation of the current stock quantity
+select title, stock_quantity,
+	CASE
+		WHEN stock_quantity between 0 and 50 THEN '*'
+		WHEN stock_quantity between 50 and 100 THEN '**'
+		ELSE '***'
+	END AS Stock
+FROM books;
++-----------------------------------------------------+----------------+-------+
+| title                                               | stock_quantity | Stock |
++-----------------------------------------------------+----------------+-------+
+| The Namesake                                        |             32 | *     |
+| Norse Mythology                                     |             43 | *     |
+| American Gods                                       |             12 | *     |
+| Interpreter of Maladies                             |             97 | **    |
+| A Hologram for the King: A Novel                    |            154 | ***   |
+| The Circle                                          |             26 | *     |
+| The Amazing Adventures of Kavalier & Clay           |             68 | **    |
+| Just Kids                                           |             55 | **    |
+| A Heartbreaking Work of Staggering Genius           |            104 | ***   |
+| Coraline                                            |            100 | **    |
+| What We Talk About When We Talk About Love: Stories |             23 | *     |
+| Where I'm Calling From: Selected Stories            |             12 | *     |
+| White Noise                                         |             49 | *     |
+| Cannery Row                                         |             95 | **    |
+| Oblivion: Stories                                   |            172 | ***   |
+| Consider the Lobster                                |             92 | **    |
+| 10% Happier                                         |             29 | *     |
+| fake_book                                           |            287 | ***   |
+| Lincoln In The Bardo                                |           1000 | ***   |
++-----------------------------------------------------+----------------+-------+
+
+--knowing when to use certain operators can save you some time
+
+--in this example we take adavntage of the execution order of things (rather than using BETWEEN)
+--this makes our code a bit shorter in this instance, when in other situations BETWEEN was the better option
+select title, stock_quantity,
+	CASE
+		WHEN stock_quantity <= 50 THEN '*'
+		WHEN stock_quantity <= 100 THEN '**'
+		ELSE '***'
+	END AS Stock
+FROM books;
+
+EXERCISES
+--evaluate the following:
+-select 10 != 10; false 
+-select 15 > 14 && 99 - 5 <= 94; true
+-select 1 in (5,3) || 9 between 8 and 10; true
+
+--select all books written before 1980
+select title, released_year from books where released_year < 1980;
+
+--select all books written by eggers or chabon
+select title, author_lname from books
+where author_lname in('eggers', 'chabon');
+
+--select all books written by Lahiri published after 2000
+select title, author_lname, released_year from books 
+where author_lname = 'lahiri' && released_year > 2000;
+
+--select all books where the page count is between 100 and 200 pages
+select title, pages from books
+where pages between 100 and 200;
+
+--select all books where the author last name starts with a 'C' or 'S'
+select title, author_lname from books
+where author_lname like 'c%' or author_lname like 's%';
+--using substring
+select title, author_lname from books
+where SUBSTR(author_lname, 1, 1) IN('c','s');
+
+--if the title contains 'stories' Genre = 'short stories'
+--if the title contains 'kids' or 'heatbreaking' Genre = 'memoir'
+--else Genre = 'novel' 
+--REMINDER: case, when, then, else, end
+select title, author_lname,
+	CASE
+		WHEN title like '%stories%' THEN 'short stories'
+		WHEN title like '%kids%' or title like '%heartbreaking%' THEN 'memoir'
+		ELSE 'novel'
+	END
+	AS Genre
+from books;
+
+--select the authors last name and return the number of books theyve written 
+--under a 'column' called count, 
+--EX: author_lname = Carver, count = 2 books
+--EASY WAY
+select author_lname, concat(count(author_fname),' ', 'book(s)') as BookCount
+from books
+group by author_lname, author_fname;
+
+--CORRECT WAY
+select author_lname,
+	CASE
+		WHEN count(author_fname) > 1 THEN concat(count(author_fname),' ', 'books')
+		ELSE concat(count(author_fname),' ', 'book')
+	END AS BookCount 
+from books
+group by author_lname, author_fname;
+
+--Colt's Method(BEST WAY):
+select author_lname,
+	CASE
+		WHEN count(*) = 1 THEN '1 book'
+		ELSE concat(count(*), ' books')
+	END AS BookCount
+from books
+group by author_fname, author_lname;
+
+########################################################################################################################################
+SECTION 12
+
+Relationships & Joins
+
+one to one:
+	-not that common
+	EX: customer details table - one customer, one row of info
+
+one to many:
+	-the most common
+	EX: book reviews - one book can have many reviews.
+	(books have many reviews, but reviews belong to one book)
+	
+	
+many to many:
+	-fairly common
+	EX: 2 entities, books and authors - books can have many authors and those authors can have many books
+
+
+1:Many
+	Customers & Orders-
+	customer Bill Clinton can have many orders, but those orders are only associated with one customer
+
+	What we want to store (for basic app):
+	+-----------------------------------------+
+	-customers first and last name | (varchar)
+	-customers email               | (varchar)
+	-date of purchsse              | (datetime)
+	-price of order                | (decimal)
+	-registration date             | (datetime)
+	-last active date              | (datetime)
+	-password                      | (varchar)
+	-phone number                  | (int)
+
+	We could use one table, but...
+	-doing so could result in the unnecessary duplication of data
+	-if we have customers without an order they will have unnecessary NULL values
+
+	Instead we should...
+	-assign the customer a customer_id field
+	EX:
+	--say we a customers table and an orders table...
+
+	Customers       Orders
+	------------------------------
+	-customer_id  | -order_id 
+	-first_name   | -order_date
+	-last_name    | -amount
+	-email        | -customer_id
+
+	--notice that both of these table share customer_id (primary key for customers table)
+	--heres how it would look in the table...
+
+	Customers Table
+	+-----------------------------------+
+	|customer_id |first_name |last_name |
+	+-----------------------------------+
+	|1           |Boy        |George    | <-customer_id is the primary key in customers table
+	|2           |George     |Michael   |  (this is important because we want each customer to have a unique id
+	|3           |David      |Bowie     |   id associated with them)
+	|4           |Blue       |Steele    |
+	+-----------------------------------+
+
+	Orders Table
+	+---------------------------------------------+ <-customer_id is the foreign key(and order_id is primary key)
+	|order_id |order_date   |amount | customer_id | (because even if its the same customer, each order must have a unique
+	+---------------------------------------------+  id associated with it)
+	|1        |'2016/02/10' |99.99  |1            | <-customer with id 1 can have purchases tracked via id number
+	|2        |'2016/02/10' |35.50  |1            | <-customer with id 1 will have seprate order_id for different transactions
+	|3        |'2016/02/10' |800.67 |2            |
+	|4        |'2016/02/10' |12.50  |2            |
+	+---------------------------------------------+
+
+--create a new database for an e-shop
+CREATE DATABASE e_shop;
+
+--switch to new database
+USE e_shop;
+
+--create a new table for customers
+CREATE TABLE customers(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	first_name VARCHAR(100),
+	last_name VARCHAR(100),
+	email VARCHAR(100)
+);
+
+--create a new table for orders
+CREATE TABLE orders(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	order_date DATE,
+	amount DECIMAL(8,2),
+	customer_id INT, 
+	FOREIGN KEY(customer_id) REFERENCES customers(id)
+);
+--assign it value FOREIGN KEY, pass in the table that its
+--referencing, and pass in the desired field to that "id"
+
+--data for our customers table
+INSERT INTO customers(first_name, last_name, email)
+VALUES
+('Boy','George','george@gmail.com'),
+('George','Michael','gm@gmail.com'),
+('David','Bowie','david@gmail.com'),
+('Blue','Steele','blue@gmail.com');	
+
+--data for our orders table
+INSERT INTO orders(order_date, amount, customer_id)
+VALUES
+('2016/02/10', 99.99, 1),
+('2017/11/11', 35.50, 1),
+('2014/12/12', 800.67, 2),
+('2015/01/03', 12.50, 2),
+('2016/02/10', 420.69, 4);	
+
+--find all the orders placed by Boy George (id 1)
+--(2 step process to get the orders placed by Boy)
+SELECT * FROM customers WHERE last_name = 'George';
+SELECT * FROM orders WHERE customer_id = 1;
+
+
+--do the same using a sub-query
+SELECT * FROM orders WHERE customer_id = 
+(
+	SELECT id FROM customers 
+	WHERE last_name = 'George'
+);
+
+--if we want to print the names of customers using the orders table, we must use a join
+--below is an example of a Cross-Join (or Cartesian Join) AKA the bad one!!!
+SELECT * FROM customers, orders; --THIS IS A MEANINGLESS JOIN!!!
+
+--another example of what not to do
+SELECT * FROM customers, orders WHERE id = customer_id; --WRONG WAY!
+
+--here is a better way to accomplish this (using an Implicit INNER JOIN)
+
+--IMPLICIT INNER JOIN
+SELECT first_name, last_name, order_date, amount 
+FROM customers, orders 
+WHERE customers.id = orders.customer_id;
+
+--but the proper way to do this would be using an explicit inner join
+
+--EXPLICIT INNER JOIN
+SELECT first_name, last_name, order_date, amount 
+FROM customers
+JOIN orders
+ON customers.id = orders.customer_id; --(primary key matching a foreign key)
+
+--Adding Fanciness to our query
+SELECT first_name, last_name, order_date, amount 
+FROM customers
+JOIN orders
+ON customers.id = orders.customer_id 
+GROUP BY orders.customer_id --Use something unique to create groups (because 2 people could have the same name)
+ORDER BY amount;
+
+--even fancier!!!
+--write a query to find the biggest spender
+SELECT first_name, last_name, SUM(amount) AS total_spent 
+FROM customers
+JOIN orders ON customers.id = orders.customer_id 
+GROUP BY orders.customer_id
+ORDER BY total_spent DESC;
+
+--LEFT JOIN
+SELECT first_name, last_name, order_date, amount 
+FROM customers
+LEFT JOIN orders 
+ON customers.id = orders.customer_id;
+--Using a left join will take everything from the left side (customers) as well as the stuff
+--that you would get in an INNER JOIN
+
+--the purpose for doing a left join in our scenario might be to see how many people 
+--have registered on the site, but not made a purchase yet (this info could be used to
+--better target those who are on the fence with better ads or something like that)
+
+--or like Colt said, you could send an email to the big spenders thanking them for their patronage
+--and on the other side for those that havent yet, you could send them a coupon to get that fisrt purchase
+
+--using IFNULL(what youre checking for, what you want to replace with)
+SELECT 
+first_name, 
+last_name, 
+IFNULL(SUM(amount), 0) AS monies_wasted 
+FROM customers
+LEFT JOIN orders ON customers.id = orders.customer_id
+GROUP BY customers.id
+ORDER BY monies_wasted;
+
+--RIGHT JOIN
+SELECT first_name, last_name, order_date, amount 
+FROM customers
+RIGHT JOIN orders 
+ON customers.id = orders.customer_id;
+--the only way to make sense of using a RIGHT JOIN given our current tables would be
+--if a customer deleted their profile BUT the orders remained, then when we would run 
+--a query (using A RIGHT JOIN) we would get NULL values for the customer but valid data for the orders 
+
+--HOWEVER, because these table use foreign keys that reference each other, we cannot simply 
+--delete a customer or even an entire table that is tied to another via FOREIGN KEY
+
+--in order to quickly delete this data we would have to drop both tables at the same time.
+
+########EXTRA########
+--in this part of the section we are dealing with a theoretical situation in which we have deleted a user,
+but the orders they placed remained (only possible if they are not bound by a foreign key constraint).
+
+SELECT 
+IFNULL(first_name, 'MISSING') AS first,
+IFNULL(last_name, 'USER') AS last,
+order_date, 
+amount 
+FROM customers
+RIGHT JOIN orders 
+ON customers.id = orders.customer_id
+GROUP BY first_name, last_name;
+
+--ON DELETE CASCADE
+
+When creating a table, an additional clause can be added (ON DELETE CASCADE) 
+that will remove any constraints from that table that pertains to another table 
+(if we delete a customer, the orders from that customer will be deleted as well)
+
+--create a new table for orders
+CREATE TABLE orders(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	order_date DATE,
+	amount DECIMAL(8,2),
+	customer_id INT, 
+	FOREIGN KEY(customer_id) REFERENCES customers(id)
+	ON DELETE CASCADE
+);
+
+NOTE:
+Regarding RIGHT and LEFT JOINS,
+FAQ - "is there a difference to right and left joins if we were to just change the order of what were joining?"
+
+Answer: No
+
+Example-
+SELECT * FROM customers
+LEFT JOIN orders
+ON customers.id = orders.customer_id;
+
+SELECT * FROM orders
+RIGHT JOIN orders
+ON customers.id = orders.customer_id;
+
+--both of these queries will return the same results!
+
+EXERCISES:
+--write a schema for a students and papers table
+Students:
+-id
+-first_name
+
+Papers:
+-title
+-grade
+-student_id
+
+CREATE TABLE students(
+id INT AUTO_INCREMENT PRIMARY KEY,
+first_name VARCHAR(25) 
+);
+
+CREATE TABLE papers(
+title VARCHAR(25),
+grade INT,
+student_id INT,
+FOREIGN KEY (student_id) REFERENCES students(id)
+ON DELETE CASCADE
+);
+
+--starter data (provided by Colt)
+INSERT INTO students (first_name) VALUES 
+('Caleb'), 
+('Samantha'), 
+('Raj'), 
+('Carlos'), 
+('Lisa');
+ 
+INSERT INTO papers (student_id, title, grade ) VALUES
+(1, 'My First Book Report', 60),
+(1, 'My Second Book Report', 75),
+(2, 'Russian Lit Through The Ages', 94),
+(2, 'De Montaigne and The Art of The Essay', 98),
+(4, 'Borges and Magical Realism', 89);
+
+1.
+SELECT first_name, title, grade
+FROM students 
+JOIN papers
+ON students.id = papers.student_id;
++------------+---------------------------------------+-------+
+| first_name | title                                 | grade |
++------------+---------------------------------------+-------+
+| Caleb      | My First Book Report                  |    60 |
+| Caleb      | My Second Book Report                 |    75 |
+| Samantha   | Russian Lit Through The Ages          |    94 |
+| Samantha   | De Montaigne and The Art of The Essay |    98 |
+| Carlos     | Borges and Magical Realism            |    89 |
++------------+---------------------------------------+-------+
+
+2.
+SELECT first_name, title, grade
+FROM students 
+LEFT JOIN papers
+ON students.id = papers.student_id;
++------------+---------------------------------------+-------+
+| first_name | title                                 | grade |
++------------+---------------------------------------+-------+
+| Caleb      | My First Book Report                  |    60 |
+| Caleb      | My Second Book Report                 |    75 |
+| Samantha   | Russian Lit Through The Ages          |    94 |
+| Samantha   | De Montaigne and The Art of The Essay |    98 |
+| Raj        | NULL                                  |  NULL |
+| Carlos     | Borges and Magical Realism            |    89 |
+| Lisa       | NULL                                  |  NULL |
++------------+---------------------------------------+-------+
+
+3.
+SELECT 
+first_name, 
+IFNULL(title, 'MISSING') AS title,
+IFNULL(grade, '0') AS grade
+FROM students 
+LEFT JOIN papers
+ON students.id = papers.student_id;
++------------+---------------------------------------+-------+
+| first_name | title                                 | grade |
++------------+---------------------------------------+-------+
+| Caleb      | My First Book Report                  | 60    |
+| Caleb      | My Second Book Report                 | 75    |
+| Samantha   | Russian Lit Through The Ages          | 94    |
+| Samantha   | De Montaigne and The Art of The Essay | 98    |
+| Raj        | MISSING                               | 0     |
+| Carlos     | Borges and Magical Realism            | 89    |
+| Lisa       | MISSING                               | 0     |
++------------+---------------------------------------+-------+
+
+4.
+SELECT 
+first_name,
+IFNULL(AVG(grade),0) AS avg_grade
+FROM students
+LEFT JOIN papers 
+ON students.id = papers.student_id
+GROUP BY id
+ORDER BY avg_grade DESC;
++------------+-----------+
+| first_name | avg_grade |
++------------+-----------+
+| Samantha   |   96.0000 |
+| Carlos     |   89.0000 |
+| Caleb      |   67.5000 |
+| Raj        |    0.0000 |
+| Lisa       |    0.0000 |
++------------+-----------+
+
+5.
+SELECT 
+first_name,
+IFNULL(AVG(grade),0) AS avg_grade,
+	CASE
+		WHEN AVG(grade) IS NULL THEN 'FAILING'
+		WHEN AVG(grade) >= 75 THEN 'PASSING'
+		ELSE 'FAILING'
+	END AS passing_status
+FROM students
+LEFT JOIN papers
+ON students.id = papers.student_id
+GROUP BY id
+ORDER BY avg_grade DESC;
++------------+-----------+----------------+
+| first_name | avg_grade | passing_status |
++------------+-----------+----------------+
+| Samantha   |   96.0000 | PASSING        |
+| Carlos     |   89.0000 | PASSING        |
+| Caleb      |   67.5000 | FAILING        |
+| Raj        |    0.0000 | FAILING        |
+| Lisa       |    0.0000 | FAILING        |
++------------+-----------+----------------+ 
+
+########################################################################################################################################
+SECTION 13
+
+Many To Many
+
+Examples of a Many To Many relationship:
+books     <-> authors (books can have many authors, authors can have many books)
+blog post <-> tags (each post can have multiple tags, tags can have multiple posts associated with them)
+students  <-> classes (students have multiple classes, each class has multiple students)
+
+#for conceptual reasons, imagine we are building a 
+TV show reviewing application (like IMDB)
+
+we have:
+-a reviewer
+-tv shows
+
+we will be associating users with tv shows, for this we will need 3 tables
+series data (exist on their own)
+    ^ 
+reviews data (JOIN or UNION table) will have info on the show being reviewed, the person with the review, and the rating
+    ^
+reviewer data (exist on their own)
+
+Schema for these tables:
+
+reviewers
+-id
+-first_name
+-last_name
+
+reviews
+-id
+-rating
+-series_id (foreign key/series)
+-reviewer_id (foreign key/reviewers)
+
+series
+-id 
+-title
+-released_year
+-genre
+
+example of what this data might look like
+here we have:
+-2 reviewers
+-2 shows
+-2 reviews (both of the same show)
+
+reviewers
++---------+-------------+----------------+
+|id       |first_name   |last_name       |
++---------+-------------+----------------+
+|1        |blue         |steele          |
++---------+-------------+----------------+
+|2        |wyatt        |earp            |
++---------+-------------+----------------+
+
+series
++---------+-------------+----------------+-----------+
+|id       |title        |released_year   |genre      |
++---------+-------------+----------------+-----------+
+|1        |archer       |2009            |animation  |
++---------+-------------+----------------+-----------+
+|2        |wyatt        |2014            |drama      |
++---------+-------------+----------------+-----------+
+
+reviews
++---------+-------------+----------------+-----------+
+|id       |rating       |reviewer_id     |series_id  |
++---------+-------------+----------------+-----------+
+|1        |8.9          |1               |2          |
++---------+-------------+----------------+-----------+
+|2        |9.5          |2               |2          |
++---------+-------------+----------------+-----------+
+
+--create database for this section
+create database tv_review_app;
+
+--create reviewers table
+CREATE TABLE reviewers (
+id INT AUTO_INCREMENT PRIMARY KEY,
+first_name VARCHAR(100),
+last_name VARCHAR(100)
+);
+
+--create series table
+CREATE TABLE series(
+id INT AUTO_INCREMENT PRIMARY KEY,
+title VARCHAR(100),
+released_year YEAR(4),
+genre VARCHAR(100)
+);
+
+--create reviews table
+CREATE TABLE reviews(
+id INT AUTO_INCREMENT PRIMARY KEY,
+rating DECIMAL(2,1),
+series_id INT,
+reviewer_id INT,
+FOREIGN KEY(series_id) REFERENCES series(id),
+FOREIGN KEY(reviewer_id) REFERENCES reviewers(id)
+);
+
+
+--insert data into our tables
+INSERT INTO series (title, released_year, genre) VALUES
+    ('Archer', 2009, 'Animation'),
+    ('Arrested Development', 2003, 'Comedy'),
+    ("Bob's Burgers", 2011, 'Animation'),
+    ('Bojack Horseman', 2014, 'Animation'),
+    ("Breaking Bad", 2008, 'Drama'),
+    ('Curb Your Enthusiasm', 2000, 'Comedy'),
+    ("Fargo", 2014, 'Drama'),
+    ('Freaks and Geeks', 1999, 'Comedy'),
+    ('General Hospital', 1963, 'Drama'),
+    ('Halt and Catch Fire', 2014, 'Drama'),
+    ('Malcolm In The Middle', 2000, 'Comedy'),
+    ('Pushing Daisies', 2007, 'Comedy'),
+    ('Seinfeld', 1989, 'Comedy'),
+    ('Stranger Things', 2016, 'Drama');
+
+INSERT INTO reviewers (first_name, last_name) VALUES
+    ('Thomas', 'Stoneman'),
+    ('Wyatt', 'Skaggs'),
+    ('Kimbra', 'Masters'),
+    ('Domingo', 'Cortes'),
+    ('Colt', 'Steele'),
+    ('Pinkie', 'Petit'),
+    ('Marlon', 'Crafford');
+
+INSERT INTO reviews(series_id, reviewer_id, rating) VALUES
+    (1,1,8.0),(1,2,7.5),(1,3,8.5),(1,4,7.7),(1,5,8.9),
+    (2,1,8.1),(2,4,6.0),(2,3,8.0),(2,6,8.4),(2,5,9.9),
+    (3,1,7.0),(3,6,7.5),(3,4,8.0),(3,3,7.1),(3,5,8.0),
+    (4,1,7.5),(4,3,7.8),(4,4,8.3),(4,2,7.6),(4,5,8.5),
+    (5,1,9.5),(5,3,9.0),(5,4,9.1),(5,2,9.3),(5,5,9.9),
+    (6,2,6.5),(6,3,7.8),(6,4,8.8),(6,2,8.4),(6,5,9.1),
+    (7,2,9.1),(7,5,9.7),
+    (8,4,8.5),(8,2,7.8),(8,6,8.8),(8,5,9.3),
+    (9,2,5.5),(9,3,6.8),(9,4,5.8),(9,6,4.3),(9,5,4.5),
+    (10,5,9.9),
+    (13,3,8.0),(13,4,7.2),
+    (14,2,8.5),(14,3,8.9),(14,4,8.9);
+
+
+--create a query that displays the title and rating for all tv shows (limit 15)
+--this uses an explicit inner join 
+SELECT title, rating 
+FROM series 
+JOIN reviews 
+ON series.id = reviews.series_id
+LIMIT 15;
+
+--create a query that displays the series title and an average rating
+--we group by series.id (to be certain that there will be no duplicated data)
+SELECT title, AVG(rating) AS avg_rating
+FROM series 
+JOIN reviews 
+ON series.id = reviews.series_id
+GROUP BY series.id
+ORDER BY avg_rating;
+
+--create a query that displays the fisrt and last name of the reviewer as well as all the ratings they posted
+SELECT first_name, last_name, rating 
+FROM reviewers
+JOIN reviews 
+ON reviewers.id = reviewer_id;
+
+--create a query that selects all the series without reviews
+--NOTE: do not say something = NULL, rather something IS NULL (to prevent certain errors)
+SELECT title
+FROM series
+LEFT JOIN reviews 
+ON series.id = reviews.series_id
+WHERE rating IS NULL;
+
+--create a query that displays the genre and average rating of all the series
+SELECT genre, ROUND(AVG(rating),1) AS avg_rating 
+FROM series 
+INNER JOIN reviews 
+ON series.id = reviews.series_id
+GROUP BY genre;
+
+--create a query that displays user first/last, ammount of reviews, lowest/highest rating, average rating, and status
+SELECT 
+	first_name, 
+	last_name, 
+	COUNT(rating) AS count, 
+	IFNULL(MIN(rating),0) AS MIN, 
+	IFNULL(MAX(rating),0) AS MAX, 
+	ROUND(IFNULL(AVG(rating),0),1) AS AVG,
+	CASE
+		WHEN COUNT(rating) >= 1 THEN 'ACTIVE'
+		ELSE 'INACTIVE'
+	END AS STATUS
+FROM reviewers 
+LEFT JOIN reviews 
+ON reviewers.id = reviews.reviewer_id
+GROUP BY reviewer_id;
+
+NOTE: the CASE statement in the query above can be replaced with an IF statement,
+However, this should only be used when we are only checking for one condition 
+IF(COUNT(rating) >= 1, 'ACTIVE','INACTIVE') AS STATUS
+    (condition) return if true, return if false and the alias
+
+if you wanted to add an extra condition to our CASE statement, its acheived like so...
+	CASE
+		WHEN COUNT(rating) >= 10 THEN 'PRO USER'
+		WHEN COUNT(rating) > 0 THEN 'ACTIVE'
+		ELSE 'INACTIVE'
+	END AS STATUS
+	
+--create a query that displays the series title, every rating it received, as well as the reviewer who wrote said rating
+SELECT title, rating, 
+FROM series
+JOIN reviews 
+ON series.id = reviews.series_id
+
+SELECT title, rating, CONCAT(first_name," ",last_name) AS Reviewer
+FROM reviewers
+INNER JOIN reviews 
+ON reviewers.id = reviews.reviewer_id
+INNER JOIN series 
+ON series.id = reviews.series_id;
+
+########################################################################################################################################
+SECTION 14
+
+Schema Design (for IG clone)
+
+--simple table for users
+CREATE TABLE users (
+	id INTEGER AUTO_INCREMENT PRIMARY KEY,
+	username VARCHAR(255) UNIQUE NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW()
+);
+
+--simple table for photos
+CREATE TABLE photos (
+	id INTEGER AUTO_INCREMENT PRIMARY KEY,
+	image_url VARCHAR(255) NOT NULL,
+	user_id INTEGER NOT NULL, 
+	created_at TIMESTAMP DEFAULT NOW(),
+	FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+--simple table for comments
+CREATE TABLE comments (
+	id INTEGER AUTO_INCREMENT PRIMARY KEY,
+	comment_text VARCHAR(255) NOT NULL,
+	user_id INTEGER NOT NULL,
+	photo_id INTEGER NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW(),
+	FOREIGN KEY(user_id) REFERENCES users(id),
+	FOREIGN KEY(photo_id) REFERENCES photos(id)
+);
+
+--simple table for likes
+CREATE TABLE likes (
+	user_id INTEGER NOT NULL,
+	photo_id INTEGER NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW(),
+	FOREIGN KEY(user_id) REFERENCES users(id),
+	FOREIGN KEY(photo_id) REFERENCES photos(id)
+	PRIMARY KEY(user_id, photo_id)
+);
+
+--PRIMARY KEY(user_id, photo_id)
+this line ensures that each user can only like something one time
+
+Relationship Troubles:
+--on ig a user cannont follow themselves, but we do need to keep track who a user follows, and who follows them
+
+--this simple diagram explains the relationship between a user and follower
++-----------+             +------------+
+|users      |             |follows     |
++-----------+             +------------+
+|id         |<-----<------|follower_id |
++-----------+      |      +------------+
+|username   |      ^------|followee_id |
++-----------+             +------------+
+|created_at |             |created_at  |
++-----------+             +------------+
+
+--both the follower_id and followee_id are FOREIGN KEY(s) referring to the user id
+
+--create a simple table for followers
+CREATE TABLE follows(
+	follower_id INTEGER NOT NULL,
+	followee_id INTEGER NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW(),
+	FOREIGN KEY (follower_id) REFERENCES users(id),
+	FOREIGN KEY (followee_id) REFERENCES users(id),
+	PRIMARY KEY(follower_id, followee_id) 
+);
+
+creating a schema for tags is tricky because each photo can have multiple tags,
+and each of those tags can be associated with many other photos that have many
+other tags as well
+
+there are a few different ways we can structure this
+
+Solution 1:
+store the tags as a string, seprated by a space or octothorp '#cat#pets#animals#cute#omg'
+
+Solution 2:
+using 2 tables- photos and tags
+-tags table has a tag name and photo id(which will allow an unlimited number of tags, but is slower)
+
+Solution 3:
+using 3 tables- photos, tags, photo_tags
+-photo_tags table will include a photo_id and tag_id, tags table will include an id and tag_name
+-will allow for unlimited number of tags, and additional info can be added 
+
+--create a simple table for tags
+CREATE TABLE tags(
+	id INTEGER AUTO_INCREMENT PRIMARY KEY,
+	tag_name VARCHAR(255) UNIQUE,
+	created_at TIMESTAMP DEFAULT NOW()
+);
+
+--create a simple table for photo tags
+CREATE TABLE photo_tags(
+	photo_id INTEGER NOT NULL,
+	tag_id INTEGER NOT NULL,
+	FOREIGN KEY(photo_id) REFERENCES photos(id),
+	FOREIGN KEY(tag_id) REFERENCES tags(id),
+	PRIMARY KEY(photo_id, tag_id)
+);
+
+
+########################################################################################################################################
+SECTION 15
+
+--command to run the ig clone data file
+source ig_clone_data.sql
+
+EXERCISES
+
+1. find the oldest 5 users (to send them a thank you email)
+SELECT * FROM users ORDER BY created_at ASC LIMIT 5;
++----+------------------+---------------------+
+| id | username         | created_at          |
++----+------------------+---------------------+
+| 80 | Darby_Herzog     | 2016-05-06 00:14:21 |
+| 67 | Emilio_Bernier52 | 2016-05-06 13:04:30 |
+| 63 | Elenor88         | 2016-05-08 01:30:41 |
+| 95 | Nicole71         | 2016-05-09 17:30:22 |
+| 38 | Jordyn.Jacobson2 | 2016-05-14 07:56:26 |
++----+------------------+---------------------+
+
+2. what day of the week do most users register on? (to plan the schedule for an ad campaign)
+SELECT 
+username, 
+DAYNAME(created_at) AS day,
+COUNT(*) AS total
+FROM users
+GROUP BY day
+ORDER BY total DESC;
++-------------------+-----------+-------+
+| username          | day       | total |
++-------------------+-----------+-------+
+| Kenton_Kirlin     | Thursday  |    16 |
+| Andre_Purdy85     | Sunday    |    16 |
+| Gus93             | Friday    |    15 |
+| Harley_Lind18     | Tuesday   |    14 |
+| Kasandra_Homenick | Monday    |    14 |
+| Aniya_Hackett     | Wednesday |    13 |
+| Arely_Bogan63     | Saturday  |    12 |
++-------------------+-----------+-------+
+
+3. find the users who have never posted a photo (to target inactive users with an email campaign)
+SELECT username, image_url 
+FROM users 
+LEFT JOIN photos 
+ON users.id = photos.user_id
+WHERE image_url IS NULL
+LIMIT 10;
++---------------------+-----------+
+| username            | image_url |
++---------------------+-----------+
+| Aniya_Hackett       | NULL      |
+| Bartholome.Bernhard | NULL      |
+| Bethany20           | NULL      |
+| Darby_Herzog        | NULL      |
+| David.Osinski47     | NULL      |
+| Duane60             | NULL      |
+| Esmeralda.Mraz57    | NULL      |
+| Esther.Zulauf61     | NULL      |
+| Franco_Keebler64    | NULL      |
+| Hulda.Macejkovic    | NULL      |
++---------------------+-----------+
+
+4. which photo has the most likes (for a contest to see who can get the most likes)
+SELECT users.username, photos.id, photos.image_url, COUNT(*) AS tot_likes 
+FROM photos
+JOIN likes
+ON photos.id = likes.photo_id
+GROUP BY photos.id
+ORDER by tot_likes DESC
+LIMIT 1;
++-----+---------------------+-----------+
+| id  | image_url           | tot_likes | --this displays the photo with the most likes, but we still need the username
++-----+---------------------+-----------+
+| 145 | https://jarret.name |        48 |
++-----+---------------------+-----------+
+
+--this can be acheived with another join (also we must add username to the select clause)
+JOIN users
+ON photos.user_id = users.id
+
+SELECT users.username, photos.id, photos.image_url, COUNT(*) AS tot_likes 
+FROM photos
+JOIN likes
+ON photos.id = likes.photo_id
+JOIN users
+ON photos.user_id = users.id
+GROUP BY photos.id
+ORDER by tot_likes DESC
+LIMIT 1;
++---------------+-----+---------------------+-----------+
+| username      | id  | image_url           | tot_likes |
++---------------+-----+---------------------+-----------+
+| Zack_Kemmer93 | 145 | https://jarret.name |        48 |
++---------------+-----+---------------------+-----------+
+
+5. how many times does the average user post? (investors want to know)
+--calculate the avg number of photos per user
+total number of photos / total number of users
+SELECT(SELECT COUNT(*) FROM photos) / (SELECT COUNT(*) FROM users) AS avg;
+
+6. what are the top 5 most commonly used hashtags? (a brand want to know what hashtags to use in a post)
+SELECT tag_name, tag_id, COUNT(*) AS tagz
+FROM tags 
+JOIN photo_tags 
+ON tags.id = photo_tags.tag_id
+GROUP BY tag_name
+ORDER BY tagz DESC
+LIMIT 5;
++----------+--------+------+
+| tag_name | tag_id | tagz |
++----------+--------+------+
+| smile    |     21 |   59 |
+| beach    |     20 |   42 |
+| party    |     17 |   39 |
+| fun      |     13 |   38 |
+| lol      |     11 |   24 |
++----------+--------+------+
+
+7. find users who have liked every single photo on the site (to filter out bots)
+--my solution(no join needed, but only includes the user_id and not username)
+SELECT *, COUNT(*) AS numlikes 
+FROM likes
+GROUP BY user_id
+ORDER BY numlikes DESC
+LIMIT 15;
+
+--colts solution
+SELECT username, COUNT(*) AS num_likes
+FROM users
+INNER JOIN likes
+ON users.id = likes.user_id
+GROUP BY likes.user_id
+HAVING num_likes = (SELECT COUNT(*) FROM photos);
+
+--HAVING num_likes = 257; (if we know the exact number of photos, but this is not dynamic!)
+
+--instead we run a Sub Query to count all the photos we have, and check to see if it 
+matches the number of likes assigned to a user 
+
+HAVING clause can be used to perform operations similar to WHERE except it can 
+be used after the GROUP BY clause 
+
+########################################################################################################################################
+SECTION 16
+
+MySQL and Other Languages
+
+--NodeJS Crash Course
+
+NOTE:
+The version of Faker that Colt uses in this course is no longer stable.
+You will need to use the following syntax when you install and require faker in your project:
+
+Run this command in the terminal to install the package:
+
+npm install @faker-js/faker --save-dev
+Enter this code in your file to require it:
+
+const { faker } = require('@faker-js/faker');
+Colt uses the original (non-working) syntax in the next lecture. 
+Simply remember to use the command and syntax mentioned above, and you won't have any issues using Faker in your project.
+
+IN GoormIDE:
+--to create a new js file in GoormIDE
+touch app.js
+
+type code-
+console.log("hello!");
+
+execute the file-
+node filename.js (node app.js)
+
+--print hello world 500 times
+for(var i = 0; i < 500; i++){
+  console.log("HELLO WORLD!");
+}
+
+FAKER:
+a javascript package that streamlines the process of generating fake data
+
+--generate a fake email with faker:
+f_email = faker.internet.email();
+console.log(f_email);
+
+--generate a fake user with faker
+f_user = faker.date.past();
+console.log(f_user);
+
+#########Connecting to MySql with NodeJS:
+--install mysql
+npm install mysql
+
+--add the next 2 lines at the top of app.js file
+const { faker } = require('@faker-js/faker');
+var mysql = require('mysql');
+
+--create a connection to a database we created in the goorm container
+var connection = mysql.createConnection({
+	host : 'localhost',
+	user : 'root',
+	database : 'test'
+});
+
+--create a variable for our mysql query
+var q = 'SELECT CURTIME() AS time, CURDATE() AS date, NOW() AS now';
+
+--run the query in using Node.js 
+connection.query(q, function(error, results, fields){
+	if (error) throw error;
+	console.log(results[0].time);
+	console.log(results[0].date);
+	console.log(results[0].now);
+});
+
+--close our connection
+connection.end();
+
+--a heartier example
+var q = 'SELECT CURTIME() AS time, CURDATE() AS date, NOW() AS now';
+connection.query(q, function(error, results, fields){
+	if (error) throw error;
+	console.log(results[0].time);
+	console.log(results[0].date);
+	console.log(results[0].now.toString()); //adding toString makes the data more readable
+});
+
+--creating our users tables (in MySQL, then access it through Node)
+CREATE TABLE users (
+	email VARCHAR(255) PRIMARY KEY,
+	created_at TIMESTAMP DEFAULT NOW()
+);
+
+--inseting some random data into the users table
+INSERT INTO users(email) 
+VALUES('wedemboyz@hotmail.com'),('flatearther259@gmail.com');
+
+
+//basic connection/query syntax
+var q = 'SELECT * FROM users';
+connection.query(q, function(error, results, fields){
+	if (error) throw error;
+	console.log(results);
+	//console.log(results[0].email); //to return only the email
+});
+
+
+
+//inserting user information dynamically
+var q = 'INSERT INTO users SET ?';
+//var person = {email: 'shutupjenny@msn.com'};  insering to 1 column
+var person = {
+	email: faker.internet.email(),
+	created_at: faker.date.past()
+};
+
+connection.query(q, person, function(err, results, fields){
+	if(err) throw err;
+	console.log(results);
+});
+--to get most recent user (review) 
+SELECT * FROM users ORDER BY created_at DESC;
+
+//inserting multiple rows simultaneously
+var data = [
+	['bla@gmail.com', '2022-05-01 04:20:00'],
+	['ugh@gmail.com', '2022-05-01 08:40:00'],
+	['meh@gmail.com', '2022-05-01 10:42:00']
+];
+
+var q = "INSERT INTO users (email, created_at) VALUES ?";
+
+connection.query(q, [data], function(err, result) {
+	console.log(err);
+	console.log(result);
+});
+
+
+//loop for adding 500 users
+for (var i = 1; i < 5; i++){
+	data.push( [faker.internet.email(),faker.date.past()] );
+}
+
+--after running the Node.js file
+mysql> select count(*) as totes from users;
++-------+
+| totes |
++-------+
+|   505 |
++-------+
+
+
+//loop for adding 500 users////////////////////////////////
+for (var i = 1; i < 500; i++){
+	data.push( [faker.internet.email(),faker.date.past()] );
+}
+
+//console.log(data);
+
+var q = "INSERT INTO users (email, created_at) VALUES ?";
+
+connection.query(q, [data], function(err, result) {
+	console.log(err);
+	console.log(result);
+});
+
+EXERCISES
+1.find the earliest date a user joined
+SELECT DATE_FORMAT(created_at, '%M %D %Y') AS earliest_date
+FROM users
+ORDER BY created_at
+LIMIT 1;
++-------------------+
+| earliest_date     |
++-------------------+
+| October 14th 2021 |
++-------------------+
+
+2.find the email of the first user, HINT: subquery
+--my way (the easy way)
+SELECT * FROM users
+ORDER BY created_at
+LIMIT 1;
+
+--using a subquery (Cole's way)
+SELECT * 
+FROM users WHERE created_at = (SELECT MIN(created_at) FROM users);
++-----------------------------+---------------------+
+| email                       | created_at          |
++-----------------------------+---------------------+
+| Herminia.Hansen@hotmail.com | 2021-10-14 20:58:01 |
++-----------------------------+---------------------+
+
+3.create a table with the month name as well 
+as the number of users that joined that month
+SELECT DATE_FORMAT(created_at, '%M') AS month, 
+COUNT(email) AS count
+FROM users
+GROUP BY month
+ORDER BY count DESC;
+
+--Cole's way
+SELECT 
+MONTHNAME(created_at) AS month,
+COUNT(*) AS count 
+FROM users
+GROUP BY month
+ORDER BY count DESC;
++-----------+-------+
+| month     | count |
++-----------+-------+
+| January   |    51 |
+| August    |    46 |
+| March     |    45 |
+| November  |    44 |
+| April     |    44 |
+| July      |    43 |
+| June      |    41 |
+| December  |    40 |
+| October   |    39 |
+| September |    38 |
+| February  |    35 |
+| May       |    34 |
++-----------+-------+
+
+4.count the number of users with yahoo emails
+SELECT COUNT(*) AS yahoo_users FROM users
+WHERE email LIKE '%@yahoo%';
++-------------+
+| yahoo_users |
++-------------+
+|         154 |
++-------------+
+
+5.calculate the total number of users for each email host
+SELECT 
+CASE 
+	WHEN email LIKE '%@gmail%' THEN 'gmail'
+	WHEN email LIKE '%@yahoo%' THEN 'yahoo'
+	WHEN email LIKE '%@hotmail%' THEN 'hotmail'
+	ELSE 'other'
+END AS provider,
+COUNT(email) AS total_users
+FROM users
+GROUP BY provider
+ORDER BY total_users DESC;  
++----------+-------------+
+| provider | total_email |
++----------+-------------+
+| gmail    |         186 |
+| hotmail  |         160 |
+| yahoo    |         154 |
++----------+-------------+
+
+-------------------------------------------------------------WEB APP--------------------------------------------------------------------
+create new dir in GoormIDE, called JoinUS
+
+Express.js (Web Dev Framework)
+--provides a robust set of features for web applications
+
+--Colts HM:
+READ THE EXPRESS DOCS!
+
+--command to create a a package.json file(acts a a log file for everything that is installed in the project)
+npm init
+
+--to install express using npm(node package manager)
+npm install express --save
+
+--add faker and mysql to the JoinUS dir
+npm install faker mysql --save
+
+NOTE:
+In the next lecture Colt will show you how to create a simple web app with Express JS.
+Now that we are using GoormIDE, instead of Cloud9, 
+it is recommended that you use port 3000 instead of 8080 for the app.listen() code.
+
+--start a simple web app with express
+var express = require('express');
+var app = express();
+
+app.get("/", function(req, res){
+	res.send("OLLO!");
+)};
+
+app.listen(3000, function() {
+	console.log('App listening to port 3000!');
+});
+
+create new file app.js (in JoinUS dir)
+
+Port: can be thought of as the entry or exit point of a computer.
+
+to set app to listen to the correct port, in the GoormIDE command line:
+PORT=3000
+
+
+Adding Multiple Routes
+to start the web app:
+-cd into JoinUS
+-then type: node app.js (the name of the file we want to run)
+
+once its running we can request multiple routes by adding to the "/" at the end of the url
+Example:
+https://webapp-iwecg.run-us-west2.goorm.site/ (this url will take us to the home page, which wil; print "OLLO")
+
+https://webapp-iwecg.run-us-west2.goorm.site/joke (this will take us to the joke page)
+
+https://webapp-iwecg.run-us-west2.goorm.site/random_num (this will take us to the random_num page)
+
+app.get("/", function(request, response){
+	response.send("You have reached the homepage!");
+	console.log('someone requested us!');
+});
+
+app.get("/joke", function(req, res){
+	var joke = "Knock knock whos there? My ass."
+	res.send(joke);
+});
+
+app.get("/random_num", function(reg, res){
+	var randy = Math.floor(Math.random() * 10) + 1;
+	res.send("Your lucky number is: " + randy);
+})
+
+
+INTEGRATING MY SQL INTO THE WEB APP
+Just like Express, we have to create a var to require Mysql
+var mysql = require('mysql'); (can be typed right under the express require var)
+
+Next we create a var for our connection
+var connection = mysql.createConnection({
+	host 	: 'localhost',
+	user 	: 'jdrake',
+	database: 'join_us'
+})
+
+We replaced the "youve reached the homepage" message with a sql query
+that gives us a count of all the users in our cult
+
+app.get("/", function(request, response){
+	//Count the number of users, respond with that count
+	var q = "SELECT COUNT(*) AS user_count FROM users";
+	connection.query(q, function(err, results){
+		if(err) throw err;
+		var count = results[0].user_count;
+		response.send("We have " + count + " users in our cult!");
+		//console.log(results[0]);
+	});
+});
+
+NOTE! can only send one response per function
+
+Working With Views (adding html to our web app)
+
+EJS(embedded javascript):
+A templating language that is an alternative to writing HTML
+
+//to install:
+npm install --save ejs
+
+//configure our express app
+app.set("view engine", "ejs");
+
+app.set() is a method that allows us to set certain settings in our app
+
+//we will write our embedded javascript files in a folder called "views"
+To add this folder(containing our html) to our app.js we use the following code:
+res.render("home"); //home is the name of the file in our views folder
+
+ColesWords "the line we will be running in our route, that will render a file"
+
+NOTE: "home" is the name we set for our homepage, could also be called "root" etc.
+
+THE HTML:
+<h1>JOIN US</h1>
+ 
+<p class="lead">Enter your email to join <strong><%= count %></strong> 
+others on our waitlist. We are 100% not a cult. </p>
+ 
+<form method="POST" action='/register'>
+ <input type="text" class="form" name="email" placeholder="Enter Your Email">
+ <button>Join Now</button>
+</form>
+
+To connect our db with the views file (that will be connected to the app in app.js)
+we add a javascript object as an argument to the following line of code: // {} = javascript object
+res.render("home", {});
+
+Inside the javascript object we add a var data and the column we are getting from the db
+res.render("home", {data: user_count});
+
+Connecting The Form
+to connect the form, we will need to add to our HTML(ejs) file in home.ejs
+
+POST allows us to send the form data
+method="GET" action="/joke" will take us to the joke page upon clicking the submit button 
+
+<form method="POST" action="/register"> # /register is currently a non-exististent page
+
+for this app we want to use a POST request, so that our data is not appended in the URL
+
+"the standard way of sending data to a form, if you're adding it into a database is to do it as a post request"
+
+How does the form data make it to the server?
+we will need to define a post route, by creating a post function in app.js
+app.post('/register', function(req,res)){
+	//a POST route!
+}
+
+The next steps will require that we install a library called body-parser
+so cd into JoinUS
+and then run the command
+npm install --save body-parser
+
+then add a import into our app with the following line of code (placed with the other inports at the top of app.js)
+var bodyParser = require("body-parser");
+
+finally we add this line to our app.js file below the imports
+app.use(bodyParser.urlencoded({extended: true}));
+
+Extracting Form Data From Request Body
+we will add this line to our app.post() function
+var person = {email: req.body.email};
+
+after a user submits their email we will need to resolve the request somehow
+we can do this easily by adding this line to the end of our connection.query() in app.post
+res.redirect("/"); //take us back home after a new user is added
+
+this is what app.post() should look like now:
+app.post('/register', function(req,res){
+	var person = {
+		email: req.body.email
+	};
+
+	connection.query('INSERT INTO users SET ?', person, function(err, results){
+		if(err) throw err;
+		res.redirect("/"); 
+	});
+});
+
+STYLE
+To start we will have to create a dir to house our exterenal files
+we will name the folder 
+public
+
+inside of the folder, we create a file called
+app.css
+
+Next we will have to connect the css file to the ejs file
+first we add this to the to of our home.ejs file
+<link rel="stylesheet" href="/app.css">
+
+then add the following line to app.js:
+app.use(express.static(__dirname + "/public"));
+
+to add a free google font to our html, add this to the top of our home.ejs file
+<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
+
+NOTE: the stylying continues, but ultimately is not so important when it comes to MySql
+
+Database Triggers
+SQL statements that are automatically run when a specific table is changed
+
+Uses:
+- validating data (only allowing users over the age of 18 to sign up for a given app)
+
+Basic syntax:
+CREATE TRIGGER trigger_name
+	trigger_time trigger_event ON table_name FOR EACH ROW 
+	BEGIN
+	...
+	END;
+
+trigger_time: 
+BEFORE - do you want the code to run before something happens (like an insert)
+AFTER - do you want the code to run after something happens (like an update)
+
+trigger_event: 
+can be triggered by these 3 events
+INSERT, UPDATE, DELETE
+
+To create a basic trigger in GoormIDE:
+(Objective is to create a trigger that prevents a minor from signing up for this app)
+1. create a new folder called triggers
+2. create a new database called trigger_demo;
+3. inside the triggers dir, create a new file called users.sql
+4. inside users.sql, create a table called users, with a name(varchar) and age(int) column
+5. insert a few randos into the users table
+6. create a new file in the triggers dir, called users_trigger.sql, paste the code below in that file
+
+DELIMITER $$
+
+CREATE TRIGGER must_be_adult
+     BEFORE INSERT ON users FOR EACH ROW
+     BEGIN
+          IF NEW.age < 18
+          THEN
+              SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'Must be an adult!';
+          END IF;
+     END;
+$$
+
+DELIMITER ;
+
+7. before running the users_trigger.sql file, verify that a minor can sign up (insert a minor into users)
+8. run the users_trigger.sql file in GoormIDE (source users_trigger.sql;)
+9. try to insert a minor into the users table, it won't work! and a message should appear in the terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
